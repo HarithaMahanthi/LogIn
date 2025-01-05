@@ -68,7 +68,6 @@ public class ImgurServiceImpl implements IImgurService {
     public Image uploadImage(MultipartFile file, String username, String password) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        log.info("password at ImgurService {}",password);
         User user = authenticateUser(username, password);
 
         HttpHeaders headers = new HttpHeaders();
