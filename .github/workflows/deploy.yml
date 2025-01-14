@@ -1,0 +1,41 @@
+name: Deploy Angular App to AWS ECS
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Step 3: Build, tag, and push the Docker image
+      - name: Build, tag, and push Docker image to ECR
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          IMAGE_URI="${{ secrets.AWS_ACCESS_KEY_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+      # Step 4: Update ECS service
+      - name: Deploy to ECS
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment
