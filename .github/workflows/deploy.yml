@@ -22,8 +22,9 @@ jobs:
       # Step 3: Build, tag, and push the Docker image
       - name: Build, tag, and push Docker image to ECR
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          AWS_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: AKIAQZFG5EXF6NC5PCFJ
+          AWS_SECRET_ACCESS_KEY: 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
         run: |
           IMAGE_URI="${{ secrets.AWS_ACCESS_KEY_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
           docker build -t $IMAGE_URI .
@@ -32,9 +33,9 @@ jobs:
       # Step 4: Update ECS service
       - name: Deploy to ECS
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
-          ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+         AWS_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: AKIAQZFG5EXF6NC5PCFJ
+          AWS_SECRET_ACCESS_KEY: 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
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
